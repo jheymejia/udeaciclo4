@@ -11,7 +11,7 @@ Repositorio para el proyecto del Ciclo 4a: **Programación Web**
 | Jheyman Mejia | Analista |
 | Nombre | Scrum Master |
 | Yulder Avila | Product Owner |
-| Nombre | Administrador DB |
+| Paula Amado | Administrador DB |
 | Nombre | Developer |
 
 
