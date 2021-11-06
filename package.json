@@ -1,20 +1,20 @@
 {
-  "name": "ciclo4",
+  "name": "udeaciclo4",  
   "version": "1.0.0",
-  "description": "",
   "main": "app.js",
+  "repository": "https://github.com/jheymejia/udeaciclo4.git",
+  "author": "Jheyman Mejia <48772215+jheymejia@users.noreply.github.com>",
+  "type": "module",
+  "license": "MIT",  
   "dependencies": {
     "express": "^4.17.1",
     "mongoose": "^6.0.12",
-    "nodemon": "^2.0.14"
+    "nodemon": "^2.0.14"    
   },
-  "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon app.js"
-  },
-  "keywords": [],
-  "author": "",
-  "type": "module",
-  "license": "ISC"
+    "dev": "nodemon app.js"    
+  }
+  
 }
+
+

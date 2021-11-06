@@ -1,7 +1,6 @@
-# Mision TIC 2021 :rocket:
+# :rocket: Mision TIC 2021 
 
-### Desarrollo de Software
+### Ciclo 4a UdeaA
 
-#### Ciclo 4a UdeA
-
-Repositorio para el proyecto del Ciclo 4a.
+Repositorio para el proyecto del Ciclo 4a: **Programación Web**
+ 
