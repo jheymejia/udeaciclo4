@@ -10,10 +10,10 @@ Repositorio para el proyecto del Ciclo 4a: **Programación Web**
 |--|--|
 | Jheyman Mejia | Analista |
 | Nombre | Scrum Master |
-| Yulder Avila | Produc Owner |
+| Yulder Avila | Product Owner |
 | Nombre | Administrador DB |
 | Nombre | Developer |
 
 
 ### :metal: Nombre del Grupo 
-Nombre del Grupo 
+Equipo CapireSoft
