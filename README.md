@@ -12,7 +12,7 @@ Repositorio para el proyecto del Ciclo 4a: **Programación Web**
 | Ruby L Hernández Pico | Scrum Master     |
 | Yulder Avila          | Product Owner    |
 | Paula Amado           | Administrador DB |
-| Nombre                | Developer        |
+| Cristian Ariza        | Developer        |
 
 ### :metal: Nombre del Grupo
 
