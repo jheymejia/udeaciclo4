@@ -2,7 +2,7 @@
 
 - Paula Amado: Vivo en el municipio de Palmira Valle, estudié mercadeo, trabajo en una casa de software y soy estudiante en MisionTic.
 
-- Ruby Hernandez:
+- Ruby Hernandez: Soy de Santander, tengo 34 años, ingeniera de petróleos con gusto por la programación y el desarrollo de software!
 
 - Jheyman Mejia:
 
