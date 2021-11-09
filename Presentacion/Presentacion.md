@@ -1,6 +1,6 @@
 # Presentacion
 
-- Paula Amado:
+- Paula Amado: Vivo en el municipio de Palmira Valle, estudié mercadeo, trabajo en una casa de software y soy estudiante en MisionTic.
 
 - Ruby Hernandez:
 
