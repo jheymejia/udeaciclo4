@@ -3,7 +3,7 @@ const express=require("express")
 const router=express.Router()
 
 router.get("/", (req,res)=>{
-    res.send("Hola grupos 16, 17 y 18, y demas compañeros! :D ")
+    res.send("Hola este será la pagina de inicio de CapireSoft")
 })
 
 router.get("/aboutus", (req,res)=>{

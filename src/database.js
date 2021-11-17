@@ -3,7 +3,7 @@ const atlasUrl="mongodb+srv://Administradores:skqy9wN171XtzZRF@capiresoft.jpkzj.
 
 try {
     //conexion con el cluster de bases de datos
-    mongoose.connect(
+    connect(
         atlasUrl, {useNewUrlParser: true, useUnifiedTopology: true}, 
         ()=> console.log("Estamos conectados a MongoDB en Atlas con Mongoose")
     );

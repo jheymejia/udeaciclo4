@@ -1,6 +1,6 @@
-const express=require("express")
+const express = require("express")
 const path=require("path")
-const exphdbs=require("express-handlebars")
+const exphdbs = require("express-handlebars")
 const methodOverride=require("method-override")
 
 //variables
@@ -10,6 +10,7 @@ require("./database")
 //Configuracion
 app.set("port", 5500)
 app.set("views", path.join(__dirname, "views"))
+/*
 app.engine(".hbs", exphdbs({
     defaultLayout: "main", //marco por defecto
     layoutsDir:path.join(app.get("views"), "layouts"), //Directorio por defecto de sus marcos 
@@ -19,7 +20,7 @@ app.engine(".hbs", exphdbs({
 })
 );
 app.set("view engine", ".hbs"); //utiliza configuación del engine
-
+*/
 //funciones
 app.use(express.urlencoded({extended: false})) //no se acepta formatos diferentes  a datos
 app.use(methodOverride("_method")) //extiende las funcionalidades de los formularios
