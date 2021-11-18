@@ -1,6 +1,6 @@
 const express = require("express")
 const path=require("path")
-const exphdbs = require("express-handlebars")
+const exphbs = require("express-handlebars")
 const methodOverride=require("method-override")
 
 //variables
@@ -10,17 +10,19 @@ require("./database")
 //Configuracion
 app.set("port", 5500)
 app.set("views", path.join(__dirname, "views"))
-/*
-app.engine(".hbs", exphdbs({
-    defaultLayout: "main", //marco por defecto
-    layoutsDir:path.join(app.get("views"), "layouts"), //Directorio por defecto de sus marcos 
-    //o plantillas, Linea obtiene direccion de los views y los concatena con los layouts
-    partialsDir: path.join(app.get("views"), "partials"),
+
+
+app.set("views", path.join(__dirname, "views"));
+app.engine(".hbs", exphbs({
+    defaultLayout: "main", //marco por defecto 
+    layoutsDir: path.join(app.get("views"), "layouts"),  //directorio de las plantillas, obtene direccion de views y concatena con layouts
+    partialsDir: path.join(app.get("views"), "partials"),  //partes reutilizables preconfigurados
     extname: ".hbs",
-})
+  })
 );
-app.set("view engine", ".hbs"); //utiliza configuación del engine
-*/
+app.set("view engine", ".hbs"); //utilizar la configuracion del engine, revisar luego
+
+
 //funciones
 app.use(express.urlencoded({extended: false})) //no se acepta formatos diferentes  a datos
 app.use(methodOverride("_method")) //extiende las funcionalidades de los formularios
