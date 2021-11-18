@@ -3,9 +3,9 @@ const atlasUrl="mongodb+srv://Administradores:skqy9wN171XtzZRF@capiresoft.jpkzj.
 
 try {
     //conexion con el cluster de bases de datos
-    connect(
+    mongoose.connect(
         atlasUrl, {useNewUrlParser: true, useUnifiedTopology: true}, 
-        ()=> console.log("Estamos conectados a MongoDB en Atlas con Mongoose")
+        ()=> console.log("Estamos conectadisimos a MongoDB en Atlas con Mongoose")
     );
 } catch(e){
     console.log("Error en la conexion :( ");
