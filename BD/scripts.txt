@@ -1,0 +1,30 @@
+db.Proyectos.insertOne({id_proyecto:"CP-002",nombre_proyecto:"Caracterizacion del proceso de cosecha en cultivos citricos",
+objetivo_general:"Caracterizar el proceso de cosecha en cultivos citricos",
+objetivos_especificos:["Identificar cultivos citricos","Realizar levantamiento del proceso de cosecha"],
+presupuesto:"25000000",
+fecha_inicio:"2022-01-03",
+fecha_terminacion_proyecto:"022-05-03",
+identificacion_usuario:"1151960143",
+nombre_completo_usuario:"Yulder Andres Avila",
+estado_proyecto:"activo",
+fase_proyecto:"Planificacion"
+})
+
+
+db.Proyectos.insertOne({
+id_proyecto:"D-00284",
+nombre_proyecto:"Detección temprana del Cáncer Colorrectal mediante la estrategia de tamizaje protocolizada",
+objetivo_general:"Determinar la prevalencia de CCR mediante la prueba con examen inmunoquímico automatizado",
+objetivos_especificos:["Identificar el grupo etario, raza, lugar de residencia y el estilo de vida que se asociacon más frecuencia al cáncer colorrectal.",
+"Realizar levantamiento del proceso de cosecha",
+"Identificar la etiología del sangrado gastrointestinal.",
+"Detectar CCR, pólipos precancerosos u otras condiciones anormales en la población sin síntomas gastrointestinales.",
+"Describir el sitio más común de las lesiones del intestino grueso."],
+presupuesto:"234000000",
+fecha_inicio:"2022-02-01",
+fecha_terminacion_proyecto:"2023-02-21",
+identificacion_usuario:"1151960143",
+nombre_completo_usuario:"Yulder Andres Avila",
+estado_proyecto:"activo",
+fase_proyecto:"Inicial"
+})
