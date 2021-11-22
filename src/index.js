@@ -3,37 +3,21 @@ const dotenv=require("dotenv");
 const { MongoClient } = require('mongodb');
 dotenv.config();
 const {DB_URI,DB_NAME}=process.env;
+const bcrypt=require("bcryptjs");
+
 
 
 
 const resolvers = {
   Query: {
-    misProyectos: () => []
-},
+    misproyectos: () => [],
+  },
+};
 
 //Mutationes
-Mutation: {
-    singUp: async(root,{input},{db})=>{
-        const hashedPassword=bcrypt.hashSync(input.password)
-        const newUser={
-            ...input,
-            password:hashedPassword,
-        }
-    const result= await db.collection("user").insertOne(newUser);
-    //Funcion asincrona que puede recibir 3 argumentos y regresa un objeto
-    const user=result.ops[0]
-    return{
-        user,
-        token:"token",
-    }
-}
-},
-user:{
-id:(root)=>{
-    return root.Id;
-}
-}
-}
+
+
+
 
 
 
