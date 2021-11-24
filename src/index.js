@@ -10,7 +10,7 @@ const bcrypt=require("bcryptjs");
 
 const resolvers = {
   Query: {
-    misproyectos: () => [],
+    misProyectos: () => [],
   },
 };
 
@@ -47,7 +47,7 @@ start();
 const typeDefs = gql`
 
   type Query{
-    misProyectos:[proyectos!]!
+    misProyectos:[Proyectos!]!
   }
   
   type Usuarios{
@@ -65,10 +65,10 @@ const typeDefs = gql`
     nombre_proyecto: String!
     objetivo_general: String!
     objetivos_especificos: [String!]
-    presupuesto: int!
-    fecha_inicio: date!
-    fecha_terminacion_proyecto: date!
-    identificacion_usuario: int!
+    presupuesto: Int!
+    fecha_inicio: String!
+    fecha_terminacion_proyecto: String!
+    identificacion_usuario: Int!
     nombre_completo_usuario: String!
     estado_proyecto: String!
     fase_proyecto: String!
@@ -76,18 +76,18 @@ const typeDefs = gql`
   type Inscripciones{
     id: ID!
     id_inscripciones: String!
-    identificacion_usuario: int!
+    identificacion_usuario: Int!
     id_proyecto: String!
     estado_inscripcion: String!
-    fecha_ingreso: date!
-    fecha_egreso: date
+    fecha_ingreso: String!
+    fecha_egreso: String
   }
   type Avances{
     
     id: ID!
     id_avance: String!
-    identifiacion_usuario: int!
-    fecha_avance: date!
+    identifiacion_usuario: Int!
+    fecha_avance: String!
     descripcion_avance: String!
     observaciones_lider: String
   }
@@ -105,7 +105,7 @@ const typeDefs = gql`
   }
 
   type AuthUser{
-      user:user!
+      user:Usuarios!
       token: String!
   }
   `;
