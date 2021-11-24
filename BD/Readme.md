@@ -2,6 +2,9 @@
 
 (![Esquema BD](https://user-images.githubusercontent.com/77408569/143257801-dbdb7895-35d1-4905-8117-e30aafd3afa8.png)
 
+![Valores Pre-establecidos](https://user-images.githubusercontent.com/77408569/143259609-c0dbdb93-2b46-4008-8e9e-bdbe7282974a.png)
+
+
 
 
 # Comandos utilizados 
