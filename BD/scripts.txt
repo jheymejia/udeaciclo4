@@ -69,3 +69,26 @@ VARIABLES
   "contrasena": "clavesecreta123",
   "tipo_usuario": "909"
 }
+
+
+
+
+mutation signIn($correo: String!,$contrasena:String! ){
+  signIn(input:
+    { correo:$correo, 
+    contrasena:$contrasena}) 
+  {
+    token
+    Usuarios {
+      id
+      nombre_completo_usuario
+    }
+    
+  }
+}
+
+
+{
+  "correo":"apolito4@gmail.com",  
+  "contrasena": "clavesecreta123"  
+}
