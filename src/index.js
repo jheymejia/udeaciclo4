@@ -10,16 +10,35 @@ const bcrypt=require("bcryptjs");
 
 const resolvers = {
   Query: {
-    misProyectos: () => [],
+    misProyectos: () => []
   },
-};
 
-//Mutationes
+  //Mutationes
+  Mutation: {
+    singUp: async(root,{input},{db})=>{
+        const hashedPassword=bcrypt.hashSync(input.contrasena)
+        const newUser={
+            ...input,
+            contrasena:hashedPassword,
+            estado_registro:"Pendiente",
 
+        }
+    const result= db.collection("Usuarios").insertOne(newUser);
+    //Funcion asincrona que puede recibir 3 argumentos y regresa un objeto
+    const id_usuario=result.ops[0]
 
-
-
-
+    return{
+      id_usuario,
+      token:"token"
+    }
+    }
+  },
+  Usuarios:{
+  id:(root)=>{
+    return root.id;
+  }
+  }
+}
 
 
 const start= async() =>{
@@ -27,16 +46,20 @@ const start= async() =>{
   await client.connect();
   const db=client.db(DB_NAME)
 
+  const context={
+      db,
+  }
 
-  const server = new ApolloServer({ typeDefs, resolvers });
+  const server = new ApolloServer({ typeDefs, resolvers, context });
 
   // The `listen` method launches a web server.
   server.listen().then(({ url }) => {
   console.log(`🚀  Server ready at ${url}`);
   });
-  }
-
+}  
 start();
+
+
 
 
 
@@ -52,7 +75,7 @@ const typeDefs = gql`
   
   type Usuarios{
     id: ID!
-    mail: String!
+    correo: String!
     identificacion_usuario:String!
     nombre_completo_usuario: String!
     contrasena: String!
@@ -97,7 +120,7 @@ const typeDefs = gql`
   }
 
   input SingUpInput{
-    mail: String!
+    correo: String!
     identificacion_usuario: String!
     nombre_completo_usuario: String!
     contrasena: String!
@@ -105,7 +128,7 @@ const typeDefs = gql`
   }
 
   type AuthUser{
-      user:Usuarios!
+      Usuarios:Usuarios!
       token: String!
   }
   `;
