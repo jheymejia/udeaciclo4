@@ -28,3 +28,44 @@ nombre_completo_usuario:"Yulder Andres Avila",
 estado_proyecto:"activo",
 fase_proyecto:"Inicial"
 })
+
+
+
+//APOLLO
+
+
+mutation singUp(
+$correo: String!,
+$identificacion_usuario:String!,
+$nombre_completo_usuario: String!,
+$contrasena: String!,
+$tipo_usuario: String!)
+
+
+{
+  singUp(input:{correo:$correo,
+    identificacion_usuario:$identificacion_usuario,
+    nombre_completo_usuario:$nombre_completo_usuario,
+    contrasena:$contrasena,
+    tipo_usuario:$tipo_usuario}
+  ) 
+  { token
+    user {
+      id
+    }
+    
+     
+      
+    }
+  }
+}
+
+
+VARIABLES 
+{
+  "correo":"apolito@gmail.com",
+  "identificacion_usuario":"237462376487l",
+  "nombre_completo_usuario": "Apolo Emilio Prueba",
+  "contrasena": "clavesecreta123",
+  "tipo_usuario": "909"
+}
