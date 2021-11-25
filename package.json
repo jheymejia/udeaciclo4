@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon src/index.js",
+    "clear": "nodemon src/cleardata.js"
   },
   "repository": {
     "type": "git",
@@ -22,6 +24,7 @@
     "bcryptjs": "^2.4.3",
     "dotenv": "^10.0.0",
     "graphql": "^15.7.2",
+    "jsonwebtoken": "^8.5.1",
     "mongodb": "^4.2.0",
     "nodemon": "^2.0.15"
   }
