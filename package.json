@@ -1,18 +1,28 @@
 {
-  "name": "udeaciclo4",
+  "name": "proyectoc4",
   "version": "1.0.0",
-  "main": "app.js",
-  "repository": "https://github.com/jheymejia/udeaciclo4.git",
-  "author": "Jheyman Mejia <48772215+jheymejia@users.noreply.github.com>",
-  "type": "module",
-  "license": "MIT",
-  "dependencies": {
-    "express": "^4.17.1",
-    "mongoose": "^6.0.12",
-    "mongose": "^0.0.2-security",
-    "nodemon": "^2.0.14"
-  },
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "dev": "nodemon app.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Y-Avila/udeaciclo4.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Y-Avila/udeaciclo4/issues"
+  },
+  "homepage": "https://github.com/Y-Avila/udeaciclo4#readme",
+  "dependencies": {
+    "apollo-server": "^3.5.0",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^10.0.0",
+    "graphql": "^15.7.2",
+    "mongodb": "^4.2.0",
+    "nodemon": "^2.0.15"
   }
 }
