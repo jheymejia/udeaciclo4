@@ -1,12 +1,17 @@
 const { ApolloServer, gql } = require('apollo-server');
 const dotenv=require("dotenv");
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId} = require('mongodb');
 dotenv.config();
-const {DB_URI,DB_NAME}=process.env;
+const {DB_URI,DB_NAME,JWT_KEY}=process.env;
 const bcrypt=require("bcryptjs");
-
-
-
+const jwt=require("jsonwebtoken");
+const getToken = (Usuarios)=> jwt.sign({id: Usuarios._id},JWT_KEY, {expiresIn: "30 days"});
+const getUserFromToken = async(token, db) => {
+  //if (!token) { return "OK" } 
+  const tokendata = jwt.verify(token, JWT_KEY);   
+  return await db.collection("Usuarios").findOne({_id: ObjectId(tokendata.id)});
+ 
+}
 
 const resolvers = {
   Query: {
@@ -15,7 +20,7 @@ const resolvers = {
 
   //Mutationes
   Mutation: {
-    singUp: async(root,{input},{db})=>{
+    signUp: async(root,{input},{db})=>{
         const hashedPassword=bcrypt.hashSync(input.contrasena)
         const newUser={
             ...input,
@@ -23,19 +28,36 @@ const resolvers = {
             estado_registro:"Pendiente",
 
         }
-    const result= db.collection("Usuarios").insertOne(newUser);
+    const result= await db.collection("Usuarios").insertOne(newUser);
     //Funcion asincrona que puede recibir 3 argumentos y regresa un objeto
-    const id_usuario=result.ops[0]
+   
 
     return{
-      id_usuario,
-      token:"token"
+      Usuarios:newUser,
+      token:getToken(newUser),
     }
-    }
+    },
+
+    signIn: async(root,{input},{db})=>{
+      const Usuarios = await db.collection("Usuarios").findOne({correo:input.correo});
+      const IsClaveCorrecta = Usuarios && bcrypt.compareSync(input.contrasena, Usuarios.contrasena );
+
+      
+
+      if(!Usuarios || !IsClaveCorrecta){
+        throw new Error("Credenciales no son correctas");    
+      }  
+      
+      return{
+        Usuarios,
+        token:getToken(Usuarios),             
+      } 
+    },  
+      
   },
   Usuarios:{
   id:(root)=>{
-    return root.id;
+    return root._id;
   }
   }
 }
@@ -46,11 +68,21 @@ const start= async() =>{
   await client.connect();
   const db=client.db(DB_NAME)
 
-  const context={
-      db,
-  }
+  const server = new ApolloServer({
+    typeDefs, 
+    resolvers, 
+    context: async({req})=>{
+      const Usuarios = await getUserFromToken(req.headers.authorization, db)
+      console.log(Usuarios)
+      return{
+        db,
+        Usuarios,
+      } 
+    },
+  }); 
+  
+    
 
-  const server = new ApolloServer({ typeDefs, resolvers, context });
 
   // The `listen` method launches a web server.
   server.listen().then(({ url }) => {
@@ -116,15 +148,21 @@ const typeDefs = gql`
   }
 
   type Mutation{
-    singUp(input:SingUpInput):AuthUser!
+    signUp(input:signUpInput):AuthUser!
+    signIn(input:signInInput):AuthUser!
   }
 
-  input SingUpInput{
+  input signUpInput{
     correo: String!
     identificacion_usuario: String!
     nombre_completo_usuario: String!
     contrasena: String!
     tipo_usuario: String!
+  }
+
+  input signInInput{
+    correo: String!   
+    contrasena: String!
   }
 
   type AuthUser{
