@@ -14,12 +14,42 @@ const getUserFromToken = async(token, db) => {
 }
  
 const resolvers = {
-  Query: {
-    misProyectos: () => []
+  Query: {  
+    
+    // HU_004
+    obtenerUsuarios: async(_,__,{db}) =>{
+
+
+      /*
+      autorizado = false;
+
+      if(Usuarios){
+        if(Usuarios.tipo_usuario == "Administrador"){
+          if(Usuarios.estado_registro == "Autorizado"){
+            autorizado = true;
+          };
+        };
+      }
+      */
+      return await db.collection('Usuarios').find().toArray();
+      
+      
+      /*
+      return(autorizado);
+      
+      if(autorizado==true){ return{true}}
+      else {return{false}}
+      */   
+     
+      
+    },
   },
 
   //Mutationes
   Mutation: {
+
+    // GENERAL HU_001, HU_002
+
     signUp: async(root,{input},{db})=>{
         const hashedPassword=bcrypt.hashSync(input.contrasena)
         const newUser={
@@ -37,7 +67,7 @@ const resolvers = {
       token:getToken(newUser),
     }
     },
-
+  
     signIn: async(root,{input},{db})=>{
       const Usuarios = await db.collection("Usuarios").findOne({correo:input.correo});
       const IsClaveCorrecta = Usuarios && bcrypt.compareSync(input.contrasena, Usuarios.contrasena );
@@ -54,24 +84,34 @@ const resolvers = {
       } 
     },  
 
+    // USUARIOS HU_003
+
     actualizarUsuario: async(_,{input},{db, Usuarios }) =>{
 
       if(!Usuarios){console.log("No esta autenticado, por favor inicie sesión.")} 
+
+      // No se almacena en DB la contrasena digitada por el usuario, se debe encriptar
+      hashedPassword = bcrypt.hashSync(input.contrasena)
       
-      
+      // Si el usuario cambia el tipo de usuario debe esperar a autorizacion por cuestion de seguridad
+      if(input.tipo_usuario==Usuarios.tipo_usuario){estado_usuario_ingresar=Usuarios.tipo_usuario}
+      else {estado_usuario_ingresar="Pendiente"}
+
       const result= await db.collection("Usuarios").updateOne({_id:ObjectId( Usuarios._id)},{$set:
         {correo: input.correo ,
           identificacion_usuario: input.identificacion_usuario,
           nombre_completo_usuario: input.nombre_completo_usuario,
-          contrasena: input.contrasena,
-          tipo_usuario: input.tipo_usuario
+          contrasena: hashedPassword,
+          tipo_usuario: input.tipo_usuario,
+          estado_registro: estado_usuario_ingresar
           }  
       });
       
       return await db.collection("Usuarios").findOne({_id:ObjectId( Usuarios._id)});
       
 
-    },
+    },  
+
 
     
       
@@ -80,7 +120,7 @@ const resolvers = {
   id:(root)=>{
     return root._id;
   }
-  }
+}
 }
 
 
@@ -126,6 +166,7 @@ const typeDefs = gql`
 
   type Query{
     misProyectos:[Proyectos!]!
+    obtenerUsuarios:[Usuarios!]
   }
   
   type Usuarios{
@@ -174,6 +215,7 @@ const typeDefs = gql`
     signUp(input:signUpInput):AuthUser!
     signIn(input:signInInput):AuthUser!
     actualizarUsuario(input:signUpInput): Usuarios!
+    
   }
 
   input signUpInput{
@@ -192,6 +234,8 @@ const typeDefs = gql`
   type AuthUser{
       Usuarios:Usuarios!
       token: String!
+
   }
+
   `;
 
