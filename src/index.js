@@ -12,7 +12,7 @@ const getUserFromToken = async(token, db) => {
   return await db.collection("Usuarios").findOne({_id: ObjectId(tokendata.id)});
  
 }
-
+ 
 const resolvers = {
   Query: {
     misProyectos: () => []
@@ -53,6 +53,27 @@ const resolvers = {
         token:getToken(Usuarios),             
       } 
     },  
+
+    actualizarUsuario: async(_,{input},{db, Usuarios }) =>{
+
+      if(!Usuarios){console.log("No esta autenticado, por favor inicie sesión.")} 
+      
+      
+      const result= await db.collection("Usuarios").updateOne({_id:ObjectId( Usuarios._id)},{$set:
+        {correo: input.correo ,
+          identificacion_usuario: input.identificacion_usuario,
+          nombre_completo_usuario: input.nombre_completo_usuario,
+          contrasena: input.contrasena,
+          tipo_usuario: input.tipo_usuario
+          }  
+      });
+      
+      return await db.collection("Usuarios").findOne({_id:ObjectId( Usuarios._id)});
+      
+
+    },
+
+    
       
   },
   Usuarios:{
@@ -68,9 +89,11 @@ const start= async() =>{
   await client.connect();
   const db=client.db(DB_NAME)
 
+
+    
   const server = new ApolloServer({
     typeDefs, 
-    resolvers, 
+    resolvers,     
     context: async({req})=>{
       const Usuarios = await getUserFromToken(req.headers.authorization, db)
       console.log(Usuarios)
@@ -80,7 +103,7 @@ const start= async() =>{
       } 
     },
   }); 
-  
+
     
 
 
@@ -143,6 +166,7 @@ const typeDefs = gql`
   type Mutation{
     signUp(input:signUpInput):AuthUser!
     signIn(input:signInInput):AuthUser!
+    actualizarUsuario(input:signUpInput): Usuarios!
   }
 
   input signUpInput{
