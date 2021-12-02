@@ -118,5 +118,17 @@ mutation HU_003(  $correo: String!,  $identificacion_usuario: String!,
 }
 
 ************************************************************************************************************************************************************************************************
+query H4{
+  obtenerUsuarios{
+    id,
+    nombre_completo_usuario,
+    contrasena,
+    tipo_usuario,
+    estado_registro,
+    correo,
+    identificacion_usuario
+  }    
+}
+
 // VARIABLES
 // RESPUESTA
