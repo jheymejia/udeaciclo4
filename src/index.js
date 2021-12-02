@@ -17,10 +17,8 @@ const resolvers = {
   Query: {  
     
     // HU_004
-    obtenerUsuarios: async(_,__,{db}) =>{
+    obtenerUsuarios: async(_,__,{db, Usuarios}) =>{
 
-
-      /*
       autorizado = false;
 
       if(Usuarios){
@@ -30,18 +28,15 @@ const resolvers = {
           };
         };
       }
-      */
-      return await db.collection('Usuarios').find().toArray();
       
+
       
-      /*
-      return(autorizado);
+      if(autorizado == true){
+        return await db.collection('Usuarios').find().toArray();
+      }
       
-      if(autorizado==true){ return{true}}
-      else {return{false}}
-      */   
-     
-      
+      else if(autorizado ==false){ throw new Error("Su usuario no esta habilitado para esta operación"); }    
+            
     },
   },
 
@@ -111,6 +106,30 @@ const resolvers = {
       
 
     },  
+
+    // USUARIOS HU_005 
+    aceptarUsuario: async(_,{_id ,estado_registro },{db, Usuarios }) =>{
+
+      if(!Usuarios){console.log("No esta autenticado, por favor inicie sesión.")}
+
+      if(Usuarios){
+        if(Usuarios.tipo_usuario == "Administrador"){
+          if(Usuarios.estado_registro == "Autorizado"){
+           
+            const result= await db.collection("Usuarios").updateOne({_id: _id},{$set:
+              { estado_registro: estado_registro }  
+            });
+            
+            return await db.collection("Usuarios").findOne({_id: _id});
+
+          };
+        };
+      }
+
+
+
+    },
+
 
 
     
@@ -208,6 +227,8 @@ const typeDefs = gql`
     signUp(input:signUpInput):AuthUser!
     signIn(input:signInInput):AuthUser!
     actualizarUsuario(input:signUpInput): Usuarios!
+
+    aceptarUsuario(id: ID!, estado_registro: String!): Usuarios! 
     
   }
 
