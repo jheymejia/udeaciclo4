@@ -37,6 +37,19 @@ const resolvers = {
       else if(autorizado ==false){ throw new Error("Su usuario no esta habilitado para esta operación"); }    
             
     },
+
+    // USUARIOS HU_010
+
+    // USUARIOS HU_013
+
+    // USUARIOS HU_015
+
+    // USUARIOS HU_017
+
+    // USUARIOS HU_019
+
+    // USUARIOS HU_021
+
   },
 
   //Mutationes
@@ -124,6 +137,32 @@ const resolvers = {
       }
     },
 
+
+    // USUARIOS HU_006
+
+    // USUARIOS HU_007
+
+    // USUARIOS HU_008
+
+    // USUARIOS HU_009
+
+    
+
+    // USUARIOS HU_011
+
+    // USUARIOS HU_012
+
+    // USUARIOS HU_014
+
+    // USUARIOS HU_016
+
+    // USUARIOS HU_018
+
+    // USUARIOS HU_020
+
+    // USUARIOS HU_022
+
+    // USUARIOS HU_023
 
 
     
