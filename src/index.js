@@ -27,8 +27,7 @@ const resolvers = {
             autorizado = true;
           };
         };
-      }
-      
+      }     
 
       
       if(autorizado == true){
@@ -108,26 +107,21 @@ const resolvers = {
     },  
 
     // USUARIOS HU_005 
-    aceptarUsuario: async(_,{_id ,estado_registro },{db, Usuarios }) =>{
+    aceptarUsuario: async(_,{id ,estado_registro },{db, Usuarios }) =>{
 
       if(!Usuarios){console.log("No esta autenticado, por favor inicie sesión.")}
 
       if(Usuarios){
         if(Usuarios.tipo_usuario == "Administrador"){
           if(Usuarios.estado_registro == "Autorizado"){
-           
-            const result= await db.collection("Usuarios").updateOne({_id: _id},{$set:
+            const result= await db.collection("Usuarios").updateOne({_id: ObjectId(id)},
+            {$set:
               { estado_registro: estado_registro }  
-            });
-            
-            return await db.collection("Usuarios").findOne({_id: _id});
-
+            })            
+            return await db.collection("Usuarios").findOne({_id: ObjectId(id)});
           };
         };
       }
-
-
-
     },
 
 
@@ -235,7 +229,7 @@ const typeDefs = gql`
     signIn(input:signInInput):AuthUser!
     actualizarUsuario(input:signUpInput): Usuarios!
 
-    aceptarUsuario(id: ID!, estado_registro: String!): Usuarios! 
+    aceptarUsuario(id:ID!, estado_registro:String!): Usuarios! 
     
   }
 
