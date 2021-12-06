@@ -38,6 +38,26 @@ const resolvers = {
             
     },
 
+    // USUARIOS HU_006
+
+    listarProyectos: async (_, __, { db, Usuarios }) => {
+      autorizado = false;
+
+      if (Usuarios) {
+        if (Usuarios.tipo_usuario == "Administrador") {
+          if (Usuarios.estado_registro == "Autorizado") {
+            autorizado = true;
+          }
+        }
+      }
+
+      if (autorizado == true) {
+        return await db.collection("Proyectos").find().toArray();
+      } else if (autorizado == false) {
+        throw new Error("Su usuario no esta habilitado para esta operación");
+      }
+    },
+
     // USUARIOS HU_010
 
     // USUARIOS HU_013
@@ -184,13 +204,69 @@ const resolvers = {
       }
     },
 
-    // USUARIOS HU_006
+    
 
     // USUARIOS HU_007
 
+    estadoInscripcion: async (_, { id, estado_inscripcion }, { db, Usuarios }) => {
+      if (!Usuarios) {
+        console.log("No esta autenticado, por favor inicie sesión.");
+      }
+
+      const result = await db.collection("Inscripciones").updateOne(
+        { _id: ObjectId(id) },
+        {
+          $set: {     
+            id: ObjectId(id),      
+            estado_inscripcion: estado_inscripcion,
+          },
+        }
+      );
+
+      return await db.collection("Inscripciones").findOne({ _id: ObjectId(id) });
+    },
+
+
     // USUARIOS HU_008
 
+    estadoProyecto: async (_, { id, estado_proyecto }, { db, Usuarios }) => {
+      if (!Usuarios) {
+        console.log("No esta autenticado, por favor inicie sesión.");
+      }
+
+      const result = await db.collection("Proyectos").updateOne(
+        { _id: ObjectId(id) },
+        {
+          $set: {     
+            id: ObjectId(id),      
+            estado_proyecto: estado_proyecto,
+          },
+        }
+      );
+
+      return await db.collection("Proyectos").findOne({ _id: ObjectId(id) });
+    },
+
+
     // USUARIOS HU_009    
+
+    faseProyecto: async (_, { id, fase_proyecto }, { db, Usuarios }) => {
+      if (!Usuarios) {
+        console.log("No esta autenticado, por favor inicie sesión.");
+      }
+
+      const result = await db.collection("Proyectos").updateOne(
+        { _id: ObjectId(id) },
+        {
+          $set: {  
+            id:   ObjectId(id),       
+            fase_proyecto: fase_proyecto,
+          },
+        }
+      );
+
+      return await db.collection("Proyectos").findOne({ _id: ObjectId(id) });
+    },
 
     // USUARIOS HU_011
 
@@ -417,6 +493,7 @@ const typeDefs = gql`
   type Query{
     misProyectos:[Proyectos!]!
     obtenerUsuarios:[Usuarios!]
+    listarProyectos: [Proyectos!]
     avancesProyectoInscrito(id_proyecto:String!): [Avances!]!
     obtenerAvancesProyecto(id:ID!): AvancesProyectos!
   }
@@ -479,6 +556,10 @@ const typeDefs = gql`
     actualizarAvance(id:ID!,avanceIn:String!):Avances!
    
     registrarIncripcion(id:ID!): Cinscripciones!
+
+    estadoInscripcion(id: ID!, estado_inscripcion: String!): Inscripciones!
+    estadoProyecto(id: ID!, estado_proyecto: String!): Proyectos!
+    faseProyecto(id: ID!, fase_proyecto: String!): Proyectos!
     
   }
 
