@@ -118,17 +118,50 @@ mutation HU_003(  $correo: String!,  $identificacion_usuario: String!,
 }
 
 ************************************************************************************************************************************************************************************************
-query H4{
-  obtenerUsuarios{
-    id,
-    nombre_completo_usuario,
-    contrasena,
-    tipo_usuario,
-    estado_registro,
-    correo,
-    identificacion_usuario
-  }    
+Historia de usuario: HU_004 
+
+  query HU_004{
+    obtenerUsuarios{
+      id,
+      nombre_completo_usuario,
+      
+      tipo_usuario,
+      estado_registro,
+      correo,
+      identificacion_usuario
+    }    
+  }
+  // VARIABLES
+  // RESPUESTA
+
+************************************************************************************************************************************************************************************************
+Historia de usuario: HU_005 
+
+  mutation HU_005($id:ID!,$estado_registro:String!){
+
+    aceptarUsuario(id:$id,estado_registro:$estado_registro)
+    {nombre_completo_usuario
+    correo
+    estado_registro}
+    
+      
+  }
+
+  // VARIABLES
+ 
+  {
+  "id":"619fb8230bf3672d324a88aa",
+  "estado_registro":"Autorizado"
 }
 
-// VARIABLES
-// RESPUESTA
+ // RESPUESTA
+
+ {
+  "data": {
+    "aceptarUsuario": {
+      "nombre_completo_usuario": "Apolo Cuarto Prueba",
+      "correo": "apolito4@gmail.com",
+      "estado_registro": "Autorizado"
+    }
+  }
+}
