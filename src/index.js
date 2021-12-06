@@ -55,29 +55,7 @@ const resolvers = {
       } else if (autorizado == false) {
         throw new Error("Su usuario no esta habilitado para esta operación");
       }
-    },
-
-
-    // USUARIOS HU_006
-
-    listarProyectos: async (_, __, { db, Usuarios }) => {
-      autorizado = false;
-
-      if (Usuarios) {
-        if (Usuarios.tipo_usuario == "Administrador") {
-          if (Usuarios.estado_registro == "Autorizado") {
-            autorizado = true;
-          }
-        }
-      }
-
-      if (autorizado == true) {
-        return await db.collection("Proyectos").find().toArray();
-      } else if (autorizado == false) {
-        throw new Error("Su usuario no esta habilitado para esta operación");
-      }
-    },
-
+    }, 
 
     // USUARIOS HU_010
 
@@ -86,7 +64,6 @@ const resolvers = {
     // USUARIOS HU_015
 
     // USUARIOS HU_017
-
 
     obtenerAvancesProyecto: async(_,{id},{db, Usuarios}) =>{
 
@@ -138,7 +115,6 @@ const resolvers = {
     
     
     },
-
 
   },
 
@@ -227,10 +203,6 @@ const resolvers = {
 
       }
     },
-
-
-    
-
     // USUARIOS HU_007
 
     estadoInscripcion: async (_, { id, estado_inscripcion }, { db, Usuarios }) => {
@@ -251,7 +223,6 @@ const resolvers = {
       return await db.collection("Inscripciones").findOne({ _id: ObjectId(id) });
     },
 
-
     // USUARIOS HU_008
 
     estadoProyecto: async (_, { id, estado_proyecto }, { db, Usuarios }) => {
@@ -271,7 +242,6 @@ const resolvers = {
 
       return await db.collection("Proyectos").findOne({ _id: ObjectId(id) });
     },
-
 
     // USUARIOS HU_009    
 
@@ -470,22 +440,8 @@ const resolvers = {
       if (!Usuarios) {
         console.log("No esta autenticado, por favor inicie sesión.");
       }
-
-
+    }, 
     
-      
-  },
-  
-  Usuarios:{ id:(root)=>{ return root._id;},
-    
-}
-}
-
-
-      return await db.collection("Inscripciones").findOne({ _id: ObjectId(id) });
-    },
-
-
     // USUARIOS HU_008
 
     estadoProyecto: async (_, { id, estado_proyecto }, { db, Usuarios }) => {
