@@ -46,9 +46,56 @@ const resolvers = {
 
     // USUARIOS HU_017
 
+    obtenerAvancesProyecto: async(_,{id},{db, Usuarios}) =>{
+
+      if(Usuarios){
+        if(Usuarios.tipo_usuario == "Lider"){
+          if(Usuarios.estado_registro == "Autorizado"){            
+
+            const Proyecto = await db.collection("Proyectos").findOne({_id: ObjectId(id)});    
+            
+            console.log(Proyecto.identificacion_usuario)
+            console.log(Usuarios.identificacion_usuario)
+            console.log(Proyecto.id_proyecto)         
+            
+         
+            const Avances = await db.collection("Avances").findOne({id_proyecto:Proyecto.id_proyecto }) 
+
+            console.log(Avances) 
+            console.log(Proyecto)
+            
+            
+            if(Proyecto.identificacion_usuario==Usuarios.identificacion_usuario){
+
+              const Avances = await db.collection("Avances").findOne({id_proyecto:Proyecto.id_proyecto })
+
+              return {
+                Avances,
+                Proyectos:Proyecto
+              }
+
+            }
+          }
+        } 
+      }
+
+    
+
+
+    },
+
     // USUARIOS HU_019
 
     // USUARIOS HU_021
+    
+    avancesProyectoInscrito: async(_,{id_proyecto},{db, Usuarios}) =>{
+      
+
+      return await db.collection("Avances").find({id_proyecto:id_proyecto}).toArray();     
+ 
+    
+    
+    },
 
   },
 
@@ -137,41 +184,192 @@ const resolvers = {
       }
     },
 
-
     // USUARIOS HU_006
 
     // USUARIOS HU_007
 
     // USUARIOS HU_008
 
-    // USUARIOS HU_009
-
-    
+    // USUARIOS HU_009    
 
     // USUARIOS HU_011
 
     // USUARIOS HU_012
 
+    crearProyecto: async(root,{input},{db, Usuarios }) =>{
+
+      if(!Usuarios){console.log("No esta autenticado, por favor inicie sesión.")}
+
+      if(Usuarios){
+        if(Usuarios.tipo_usuario == "Lider"){
+
+          const nuevoProyecto={
+            ...input,          
+            identificacion_usuario: Usuarios.identificacion_usuario,
+            nombre_completo_usuario: Usuarios.nombre_completo_usuario,
+            estado_proyecto: "Inactivo",
+            fase_proyecto: "Null"
+          }
+
+          const result= await db.collection("Proyectos").insertOne(nuevoProyecto);   
+
+          return  {
+            Proyectos:nuevoProyecto,
+            
+            
+            }    
+          
+        }
+        else{ throw new Error("Su usuario no esta habilitado para esta operación")}        
+      }
+
+
+    },
+
     // USUARIOS HU_014
 
+    modificarProyecto: async(_,{input},{db, Usuarios }) => {
+
+      if(Usuarios){
+        if(Usuarios.tipo_usuario == "Lider"){
+          if(Usuarios.estado_registro == "Autorizado"){
+
+            const Proyecto = await db.collection("Proyectos").findOne({_id: ObjectId(input.id)});  
+
+            if(Proyecto.estado_proyecto=="Activo" && Proyecto.identificacion_usuario == Usuarios.identificacion_usuario){
+
+              const result= await db.collection("Proyectos").updateOne({_id: ObjectId(input.id)},
+                {$set:
+                  { nombre_proyecto: input.nombre_proyecto,
+                    objetivo_general: input.objetivo_general,
+                    objetivos_especificos: input.objetivos_especificos,
+                    presupuesto: input.presupuesto}  
+                })  
+              return await db.collection("Proyectos").findOne({_id: ObjectId(input.id)});
+
+            }
+          }
+        }
+      }
+
+
+
+
+    },
+
     // USUARIOS HU_016
+
+    aceptarInscripcion: async(_,{id ,estado_inscripcion },{db, Usuarios }) => {
+
+      if(Usuarios){
+        if(Usuarios.tipo_usuario == "Lider"){
+          if(Usuarios.estado_registro == "Autorizado"){
+
+
+            const result= await db.collection("Inscripciones").updateOne({_id: ObjectId(id)},
+            {$set:
+              { estado_inscripcion: estado_inscripcion }  
+            })            
+            return await db.collection("Inscripciones").findOne({_id: ObjectId(id)});
+
+
+
+          }
+        }
+      }
+
+
+
+
+    },
 
     // USUARIOS HU_018
 
     // USUARIOS HU_020
 
+    registrarIncripcion: async(_,{id},{db, Usuarios})=>{
+      if(Usuarios){
+        if(Usuarios.tipo_usuario == "Estudiante"){
+          if(Usuarios.estado_registro == "Autorizado"){
+            
+            const Proyecto = await db.collection("Proyectos").findOne({_id: ObjectId(id)});    
+
+            console.log(Proyecto)
+
+            const inscripcion ={
+                              
+              identificacion_usuario: Usuarios.identificacion_usuario,      
+              id_proyecto: Proyecto.id_proyecto ,
+              estado_inscripcion: "Pendiente",
+              fecha_ingreso:"Null",
+              fecha_egreso:Proyecto.fecha_terminacion_proyecto
+            }
+
+            console.log(inscripcion)
+
+            const result= await db.collection("Inscripciones").insertOne(inscripcion);   
+            
+            return{
+              Inscripciones:inscripcion
+            }
+          }
+        }
+      }
+    },
+
     // USUARIOS HU_022
 
+    registrarAvance: async(_,{id_proyecto,avanceIn},{db, Usuarios})=>{
+
+      if(Usuarios){
+        if(Usuarios.tipo_usuario == "Estudiante"){
+          if(Usuarios.estado_registro == "Autorizado"){
+
+          const nuevoAvance={
+            id_avance: "00004",
+            identificacion_usuario: Usuarios.identificacion_usuario,
+            id_proyecto: id_proyecto,
+            fecha_avance: new Date().toISOString(),
+            descripcion_avance: avanceIn, 
+            observaciones_lider: "Null" 
+          }
+
+          console.log(nuevoAvance)
+
+          const result= await db.collection("Avances").insertOne(nuevoAvance);   
+
+          return  {Avances:nuevoAvance,    }   
+          }
+        }
+      }
+    },
+
     // USUARIOS HU_023
+
+    actualizarAvance: async(_,{id,avanceIn},{db, Usuarios})=>{
+
+      if(Usuarios){
+        if(Usuarios.tipo_usuario == "Estudiante"){
+          if(Usuarios.estado_registro == "Autorizado"){          
+            const result= await db.collection("Avances").updateOne({_id:ObjectId(id)},{
+              $set:
+              {descripcion_avance:avanceIn}
+            }); 
+
+          return  await db.collection("Avances").findOne({_id: ObjectId(id)})
+          }
+        }
+      }
+    },
+
 
 
     
       
   },
-  Usuarios:{
-  id:(root)=>{
-    return root._id;
-  }
+  
+  Usuarios:{ id:(root)=>{ return root._id;},
+    
 }
 }
 
@@ -219,6 +417,8 @@ const typeDefs = gql`
   type Query{
     misProyectos:[Proyectos!]!
     obtenerUsuarios:[Usuarios!]
+    avancesProyectoInscrito(id_proyecto:String!): [Avances!]!
+    obtenerAvancesProyecto(id:ID!): AvancesProyectos!
   }
   
   type Usuarios{
@@ -236,17 +436,16 @@ const typeDefs = gql`
     nombre_proyecto: String!
     objetivo_general: String!
     objetivos_especificos: [String!]
-    presupuesto: Int!
+    presupuesto: String!
     fecha_inicio: String!
     fecha_terminacion_proyecto: String!
-    identificacion_usuario: Int!
+    identificacion_usuario: String!
     nombre_completo_usuario: String!
     estado_proyecto: String!
     fase_proyecto: String!
   }
   type Inscripciones{
-    id: ID!
-    id_inscripciones: String!
+    id: ID!    
     identificacion_usuario: Int!
     id_proyecto: String!
     estado_inscripcion: String!
@@ -257,7 +456,8 @@ const typeDefs = gql`
     
     id: ID!
     id_avance: String!
-    identifiacion_usuario: Int!
+    id_proyecto: String!
+    identificacion_usuario: Int!
     fecha_avance: String!
     descripcion_avance: String!
     observaciones_lider: String
@@ -269,6 +469,16 @@ const typeDefs = gql`
     actualizarUsuario(input:signUpInput): Usuarios!
 
     aceptarUsuario(id:ID!, estado_registro:String!): Usuarios! 
+
+    crearProyecto(input: proyectoInput): Cproyectos
+    modificarProyecto(input: modificadorProyecto): Proyectos!
+
+    aceptarInscripcion(id:ID!, estado_inscripcion: String!): Inscripciones!
+
+    registrarAvance(id_proyecto:String!, avanceIn:String!): Cavances!
+    actualizarAvance(id:ID!,avanceIn:String!):Avances!
+   
+    registrarIncripcion(id:ID!): Cinscripciones!
     
   }
 
@@ -285,11 +495,49 @@ const typeDefs = gql`
     contrasena: String!
   }
 
+  input proyectoInput{
+    id_proyecto: String!
+    nombre_proyecto: String!
+    objetivo_general: String!
+    objetivos_especificos: [String!]
+    presupuesto: Int!
+    fecha_inicio: String!
+    fecha_terminacion_proyecto: String!    
+  }
+
+  input modificadorProyecto{
+    id:ID!
+    nombre_proyecto: String!
+    objetivo_general: String!
+    objetivos_especificos: [String!]
+    presupuesto: String!
+   
+  }
+
   type AuthUser{
       Usuarios:Usuarios!
       token: String!
 
   }
+
+  type Cproyectos{
+    Proyectos: Proyectos!
+  }
+
+  type Cavances{
+    Avances:Avances!
+  }
+
+  type AvancesProyectos{
+    Avances:Avances
+    Proyectos:Proyectos!
+  }
+
+
+  type Cinscripciones{
+    Inscripciones: Inscripciones!
+  }
+ 
 
   `;
 
