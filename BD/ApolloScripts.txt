@@ -1,0 +1,167 @@
+Historia de usuario: HU_001
+
+mutation HU_001(  $correo: String!,  $identificacion_usuario: String!,
+  $nombre_completo_usuario: String!,  $contrasena: String!,  $tipo_usuario: String! )
+  {
+  signUp(input: { correo:$correo,  identificacion_usuario:$identificacion_usuario,
+    nombre_completo_usuario:$nombre_completo_usuario,    contrasena:$contrasena,
+    tipo_usuario:$tipo_usuario }) 
+  {
+    token
+    Usuarios {
+      nombre_completo_usuario
+    }       
+  }
+}
+
+// VARIABLES 
+
+{   
+  "correo": "yulderavila@gmail.com",
+  "identificacion_usuario": "1151960143",
+  "nombre_completo_usuario": "Yulder Andres Avila",
+  "contrasena": "ClaveSegura123",
+  "tipo_usuario": "Administrador"
+}
+
+// RESPUESTA
+
+
+  "data": {
+    "signUp": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxYThlM2NiNWE0YWZhNWYxYWEyZGUwMiIsImlhdCI6MTYzODQ1ODMxNSwiZXhwIjoxNjQxMDUwMzE1fQ.WBLTnXiGtn6y-nK2ODDHIED88iYoI3NuWr2Xi44qZbs",
+      "Usuarios": {
+        "nombre_completo_usuario": "Yulder Andres Avila",
+        "estado_registro": "Pendiente",
+        "contrasena": "$2a$10$UnJnuWHn6QGpXX4PUZGwduSeLG8xiHuaQ63zzCqZlR7IP4s0VWYMW"
+      }
+    }
+  }
+}
+
+
+************************************************************************************************************************************************************************************************
+
+Historia de usuario: HU_002
+
+mutation HU_002(  $correo: String!,   $contrasena: String! )
+  {
+  signIn(input: { correo:$correo,   contrasena:$contrasena}) 
+  {
+    token
+    Usuarios {
+      nombre_completo_usuario    
+      contrasena  
+    }       
+  }
+}
+
+// VARIABLES
+
+{   
+  "correo": "yulderavila@gmail.com", 
+  "contrasena": "ClaveSegura123"  
+}
+
+// RESPUESTA
+{
+  "data": {
+    "signIn": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxYThlM2NiNWE0YWZhNWYxYWEyZGUwMiIsImlhdCI6MTYzODQ1OTExNiwiZXhwIjoxNjQxMDUxMTE2fQ.5Zlk8OcXOFiIUIYEFFY_CtIAEERNi9U9gW-b1o-Fcsg",
+      "Usuarios": {
+        "nombre_completo_usuario": "Yulder Andres Avila",
+        "contrasena": "$2a$10$UnJnuWHn6QGpXX4PUZGwduSeLG8xiHuaQ63zzCqZlR7IP4s0VWYMW"
+      }
+    }
+  }
+}
+
+************************************************************************************************************************************************************************************************
+Historia de usuario: HU_003
+
+
+mutation HU_003(  $correo: String!,  $identificacion_usuario: String!,
+  $nombre_completo_usuario: String!,  $contrasena: String!,  $tipo_usuario: String! )
+  {
+  actualizarUsuario(input: { correo:$correo,  identificacion_usuario:$identificacion_usuario,
+    nombre_completo_usuario:$nombre_completo_usuario,    contrasena:$contrasena,
+    tipo_usuario:$tipo_usuario }) 
+    {
+      correo,
+      identificacion_usuario,
+      nombre_completo_usuario,
+      contrasena,
+      tipo_usuario    
+    }  
+}
+
+
+   
+  "correo": "yulderavila@gmail.com",
+  "identificacion_usuario": "1151960143",
+  "nombre_completo_usuario": "Yulder Andres Avila Alvarez",
+  "contrasena": "ClaveSegura123",
+  "tipo_usuario": "Lider"
+}
+
+// RESPUESTA
+{
+  "data": {
+    "actualizarUsuario": {
+      "correo": "yulderavila@gmail.com",
+      "identificacion_usuario": "1151960143",
+      "nombre_completo_usuario": "Yulder Andres Avila Alvarez",
+      "contrasena": "ClaveSegura123",
+      "tipo_usuario": "Lider"
+    }
+  }
+}
+
+************************************************************************************************************************************************************************************************
+Historia de usuario: HU_004 
+
+  query HU_004{
+    obtenerUsuarios{
+      id,
+      nombre_completo_usuario,
+      
+      tipo_usuario,
+      estado_registro,
+      correo,
+      identificacion_usuario
+    }    
+  }
+  // VARIABLES
+  // RESPUESTA
+
+************************************************************************************************************************************************************************************************
+Historia de usuario: HU_005 
+
+  mutation HU_005($id:ID!,$estado_registro:String!){
+
+    aceptarUsuario(id:$id,estado_registro:$estado_registro)
+    {nombre_completo_usuario
+    correo
+    estado_registro}
+    
+      
+  }
+
+  // VARIABLES
+ 
+  {
+  "id":"619fb8230bf3672d324a88aa",
+  "estado_registro":"Autorizado"
+}
+
+ // RESPUESTA
+
+ {
+  "data": {
+    "aceptarUsuario": {
+      "nombre_completo_usuario": "Apolo Cuarto Prueba",
+      "correo": "apolito4@gmail.com",
+      "estado_registro": "Autorizado"
+    }
+  }
+}
