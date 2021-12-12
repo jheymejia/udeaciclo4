@@ -142,7 +142,7 @@ Historia de usuario: HU_005
     aceptarUsuario(id:$id,estado_registro:$estado_registro)
     {nombre_completo_usuario
     correo
-    estado_registro}
+    estado_registro}017
     
       
   }
@@ -163,5 +163,45 @@ Historia de usuario: HU_005
       "correo": "apolito4@gmail.com",
       "estado_registro": "Autorizado"
     }
+  }
+}
+
+************************************************************************************************************************************************************************************************
+query HU_015{
+  obtenerInscripcionesLider{
+    id_proyecto,
+    estado_inscripcion,
+    fecha_ingreso,
+    fecha_egreso,
+    identificacion_usuario
+  }
+}
+
+************************************************************************************************************************************************************************************************
+query HU_010{
+  obtenerEstudiantesLider{
+    id
+    nombre_completo_usuario
+    tipo_usuario
+    estado_registro
+    correo
+    identificacion_usuario
+  }
+}
+
+************************************************************************************************************************************************************************************************
+query HU_013{
+  obtenerProyectosLider{
+    id_proyecto,
+    nombre_proyecto,
+    objetivo_general,
+    objetivos_especificos,
+    presupuesto,
+    fecha_inicio,
+    fecha_terminacion_proyecto,
+    identificacion_usuario,
+    nombre_completo_usuario,
+    estado_proyecto,
+    fase_proyecto
   }
 }

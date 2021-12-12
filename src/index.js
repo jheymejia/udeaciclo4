@@ -58,63 +58,114 @@ const resolvers = {
     }, 
 
     // USUARIOS HU_010
+    obtenerEstudiantesLider: async(_,__,{db, Usuarios}) => {
+      autorizado = false;
+      if (Usuarios){
+        if (Usuarios.tipo_usuario == 'Lider' || Usuarios.tipo_usuario == 'Administrador'){
+          if(Usuarios.estado_registro == 'Autorizado'){
+            autorizado = true;
+          }
+        }
+      }
+      if (autorizado == true){
+        return await db.collection('Usuarios').find({"tipo_usuario":"Estudiante"}).toArray();
+      }
+      else throw new Error("Su usuario no está habilitado para esta operación")
+    },
+
+
 
     // USUARIOS HU_013
+    obtenerProyectosLider: async(_,__,{db, Usuarios})=>{
+      autorizado = false;
+      if (Usuarios){
+        if(Usuarios.tipo_usuario == 'Lider' || Usuarios.tipo_usuario == 'Administrador'){
+          if(Usuarios.estado_registro == 'Autorizado'){
+            autorizado = true;
+          }
+        }
+      }
+      if(autorizado == true){
+        var id_leader = Usuarios.identificacion_usuario
+        console.log('El id del líder es', id_leader)
+        return await db.collection('Proyectos').find({identificacion_usuario:id_leader}).toArray()
+      }
+      else throw new Error('Su usuario no está habilitado para esta operación')
+    },
 
     // USUARIOS HU_015
+    obtenerInscripcionesLider: async(_,__,{db, Usuarios})=>{
+      autorizado = false;
+
+      if(Usuarios){
+        if(Usuarios.tipo_usuario == 'Lider' || Usuarios.tipo_usuario == 'Administrador'){
+          if(Usuarios.estado_registro == 'Autorizado'){
+            autorizado = true;
+          }
+        }
+      }
+
+      if (autorizado = true){
+        var id_leader = Usuarios.identificacion_usuario
+        console.log('El id del líder es', id_leader)
+        var proj = await db.collection("Proyectos").find({identificacion_usuario : id_leader}).toArray()
+        console.log("El listado de proyectos de este usuario es", proj)
+        var proj_id = proj.map(a => a.id_proyecto) //línea para obtener propiedad de un arreglo de objetos
+        console.log("los ids de los proyectos del usuario son", proj_id)
+        return await db.collection('Inscripciones').find({id_proyecto: {$in: proj_id}}).toArray();
+      }
+
+      else if(autorizado == false) {throw new Error("Su usuario no está habilidato para esta operación")}
+    }
 
     // USUARIOS HU_017
 
-    obtenerAvancesProyecto: async(_,{id},{db, Usuarios}) =>{
+    // obtenerAvancesProyecto: async(_,{id},{db, Usuarios}) =>{
 
-      if(Usuarios){
-        if(Usuarios.tipo_usuario == "Lider"){
-          if(Usuarios.estado_registro == "Autorizado"){            
+    //   if(Usuarios){
+    //     if(Usuarios.tipo_usuario == "Lider"){
+    //       if(Usuarios.estado_registro == "Autorizado"){            
 
-            const Proyecto = await db.collection("Proyectos").findOne({_id: ObjectId(id)});    
+    //         const Proyecto = await db.collection("Proyectos").findOne({_id: ObjectId(id)});    
             
-            console.log(Proyecto.identificacion_usuario)
-            console.log(Usuarios.identificacion_usuario)
-            console.log(Proyecto.id_proyecto)         
+    //         console.log(Proyecto.identificacion_usuario)
+    //         console.log(Usuarios.identificacion_usuario)
+    //         console.log(Proyecto.id_proyecto)         
             
          
-            const Avances = await db.collection("Avances").findOne({id_proyecto:Proyecto.id_proyecto }) 
+    //         const Avances = await db.collection("Avances").findOne({id_proyecto:Proyecto.id_proyecto }) 
 
-            console.log(Avances) 
-            console.log(Proyecto)
+    //         console.log(Avances) 
+    //         console.log(Proyecto)
             
             
-            if(Proyecto.identificacion_usuario==Usuarios.identificacion_usuario){
+    //         if(Proyecto.identificacion_usuario==Usuarios.identificacion_usuario){
 
-              const Avances = await db.collection("Avances").findOne({id_proyecto:Proyecto.id_proyecto })
+    //           const Avances = await db.collection("Avances").findOne({id_proyecto:Proyecto.id_proyecto })
 
-              return {
-                Avances,
-                Proyectos:Proyecto
-              }
+    //           return {
+    //             Avances,
+    //             Proyectos:Proyecto
+    //           }
 
-            }
-          }
-        } 
-      }
-
-    
-
-
-    },
+    //         }
+    //       }
+    //     } 
+    //   }
+    // },
 
     // USUARIOS HU_019
 
     // USUARIOS HU_021
     
-    avancesProyectoInscrito: async(_,{id_proyecto},{db, Usuarios}) =>{
+    // avancesProyectoInscrito: async(_,{id_proyecto},{db, Usuarios}) =>{
       
 
-      return await db.collection("Avances").find({id_proyecto:id_proyecto}).toArray();     
+    //   return await db.collection("Avances").find({id_proyecto:id_proyecto}).toArray();     
  
     
     
-    },
+    // },
 
   },
 
@@ -264,6 +315,37 @@ const resolvers = {
     },
 
     // USUARIOS HU_011
+
+    aceptarEstudiante: async (_, {id, estado_registro}, {db, Usuarios}) => {
+      if(!Usuarios){
+        console.log("No está autenticado, por favor inicie sesión");
+      }
+
+      if(Usuarios){
+        if(Usuarios.tipo_usuario=='Lider' || usuarios.tipo_usuario == 'Administrador'){
+          if(Usuarios.estado_registro == 'Autorizado'){
+            var tmp = await db.collection("Usuarios").find({_id: ObjectId(id)}).limit(1).toArray()
+            
+            
+            console.log("El usuario es:", tmp)
+            console.log('El tipo de usuario es:', tmp[0].tipo_usuario)
+            if (tmp[0].tipo_usuario == 'Estudiante'){
+              const result = await db
+              .collection('Usuarios')
+              .updateOne(
+                {_id: ObjectId(id)}, 
+                {$set: {estado_registro: estado_registro}}
+                );
+              return await db
+              .collection('Usuarios')
+              .findOne({_id:ObjectId(id)});
+            }
+            else
+            {console.log('El usuario ingresado no es un estudiante')}
+          }
+        }
+      }
+    },
 
     // USUARIOS HU_012
 
@@ -482,11 +564,7 @@ const resolvers = {
       return await db.collection("Proyectos").findOne({ _id: ObjectId(id) });
     },
 
-    // USUARIOS HU_011
-
     // USUARIOS HU_012
-
-    // USUARIOS HU_014
 
     // USUARIOS HU_016
 
@@ -545,7 +623,9 @@ const typeDefs = gql`
     listarProyectos: [Proyectos!]
     avancesProyectoInscrito(id_proyecto:String!): [Avances!]!
     obtenerAvancesProyecto(id:ID!): AvancesProyectos!
-
+    obtenerInscripcionesLider:[Inscripciones!]
+    obtenerEstudiantesLider: [Usuarios!]
+    obtenerProyectosLider: [Proyectos!]
   }
 
   type Usuarios {
@@ -596,8 +676,8 @@ const typeDefs = gql`
     actualizarUsuario(input: signUpInput): Usuarios!
 
 
-    aceptarUsuario(id:ID!, estado_registro:String!): Usuarios! 
-
+    aceptarUsuario(id:ID!, estado_registro:String!): Usuarios!
+    aceptarEstudiante(id:ID!, estado_registro:String!): Usuarios!
     crearProyecto(input: proyectoInput): Cproyectos
     modificarProyecto(input: modificadorProyecto): Proyectos!
 
