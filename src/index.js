@@ -564,7 +564,7 @@ const resolvers = {
       return await db.collection("Proyectos").findOne({ _id: ObjectId(id) });
     },
 
-    // USUARIOS HU_012
+    // USUARIOS HU_012:
 
     // USUARIOS HU_016
 
