@@ -3,20 +3,21 @@
  * https://reactnavigation.org/docs/getting-started
  *
  */
-import { FontAwesome } from '@expo/vector-icons';
+import { Entypo, FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
 import { ColorSchemeName, Pressable } from 'react-native';
-
+import { AntDesign } from '@expo/vector-icons';
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import ModalScreen from '../screens/ModalScreen';
 import NotFoundScreen from '../screens/NotFoundScreen';
 
 import Inicio from '../screens/inicio';
-import SignUP from '../screens/general/SignUp';
+import SignUp from '../screens/general/SignUp';
+import SignIn from '../screens/general/SignIn';
 
 import Proyectos from '../screens/proyectos/verproyectos';
 import Inscripciones from '../screens/inscripciones/verinscripciones';
@@ -49,9 +50,11 @@ function RootNavigator() {
     <Stack.Navigator>
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
-      <Stack.Group screenOptions={{ presentation: 'modal' }}>
+      <Stack.Screen name="SignIn" component={SignIn} />
+      <Stack.Screen name="SignUp" component={SignUp} />      
+      {/* <Stack.Group screenOptions={{ presentation: 'modal' }}>
         <Stack.Screen name="Modal" component={ModalScreen} />
-      </Stack.Group>
+      </Stack.Group> */}
     </Stack.Navigator>
   );
 }
@@ -115,10 +118,10 @@ function BottomTabNavigator() {
       <BottomTab.Screen
         name="VerProyectos"
         component={Proyectos}
-        options={({ navigation }: RootTabScreenProps<'VerProyectos'>) => ({
+        options={{
           title: 'Proyectos',
           tabBarIcon: ({ color }) => <TabBarIcon name="book" color={color} /> 
-        })}
+        }}
       />
       <BottomTab.Screen
         name="VerInscripciones"
@@ -135,15 +138,24 @@ function BottomTabNavigator() {
           title: 'Avances',
           tabBarIcon: ({ color }) => <TabBarIcon name="signal" color={color} />,
         }}
+        />
+      <BottomTab.Screen
+        name="SignIn"
+        component={SignIn}
+        options={{
+          title: 'Sign In',
+          tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
+        }}
+        />
+         {/* <BottomTab.Screen
+          name="TabTwo"
+          component={TabTwoScreen}
+          options={{
+            title: 'Tab Two',
+            tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          }} */}
+          
 
-      // <BottomTab.Screen
-      //   name="TabTwo"
-      //   component={TabTwoScreen}
-      //   options={{
-      //     title: 'Tab Two',
-      //     tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-      //   }}
-      />
     </BottomTab.Navigator>
   );
 }

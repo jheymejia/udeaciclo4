@@ -16,8 +16,8 @@ declare global {
 export type RootStackParamList = {
   Root: NavigatorScreenParams<RootTabParamList> | undefined;
   Modal: undefined;
-  NotFound: undefined;  
-  Inicio: undefined;
+  NotFound: undefined;
+  Home: undefined;
   Información: undefined;
   ToDoScreen: undefined;
   SignIn: undefined;
@@ -26,7 +26,7 @@ export type RootStackParamList = {
   Projects:undefined;
   NewProject:undefined;
   NewToDo:undefined;
-
+  
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<
@@ -35,31 +35,9 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> = Nati
 >;
 
 export type RootTabParamList = {
-  // //General
-  Inicio: undefined;
-  SignUp: undefined;
-  SignIn: undefined;
-
-  // //Usuarios
-  // ActualizarEstado: undefined;
-  // ActualizarPerfil: undefined;
-
-  // //Proyectos
-  // VerProyectos: undefined;
-  // verDetallesProyecto: undefined;
-  // RegistrarProyecto: undefined;
-  // ActualizarProyecto: undefined;
-
-
-  // //Inscripciones
-  // CrearInscripcion: undefined;
-  // VerInscripciones: undefined;
-  // ActualizarEstadoInscripciones: undefined;
-
-  // //Avances
-  // CrearAvance: undefined;
-  // VerAvances: undefined;
-  // ActualizarAvances: undefined;
+  TabOne: undefined;
+  TabTwo: undefined;
+  TabThree:undefined
 };
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> = CompositeScreenProps<
