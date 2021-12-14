@@ -29,33 +29,33 @@ export default function RegistrarProyecto({ navigation }: RootTabScreenProps<'Re
     <View style={styles.container}>
       <View style={styles.box}>
         <TextInput
-          style={{ height: 40, backgroundColor: '#eee', marginBottom: 10 }}
+          style={{ height: 40, backgroundColor: 'white', marginBottom: 10, borderRadius: 10 }}
           placeholder="Id del Proyecto"
           onChangeText={text => setIdProyecto(text)}
           defaultValue={idProyecto}
         />
         <TextInput
-          style={{ height: 40, backgroundColor: '#eee', marginBottom: 10 }}
+          style={{ height: 40, backgroundColor: 'white', marginBottom: 10, borderRadius: 10 }}
           placeholder="Nombre del Proyecto"
           onChangeText={text => setNombreProyecto(text)}
           defaultValue={nombreProyecto}
         />
         <TextInput
-          style={{ height: 40, backgroundColor: '#eee', marginBottom: 10 }}
+          style={{ height: 40, backgroundColor: 'white', marginBottom: 10, borderRadius: 10 }}
           placeholder="Objetivo del Proyecto"
           onChangeText={text => setObjetivoProyecto(text)}
           defaultValue={objetivoProyecto}
         />
         <TextInput
           keyboardType='numeric'
-          style={{ height: 40, backgroundColor: '#eee', marginBottom: 10 }}
+          style={{ height: 40, backgroundColor: 'white', marginBottom: 10, borderRadius: 10 }}
           placeholder="Presupuesto del Proyecto"
           onChangeText={(text) => setPresupuestoProyecto(Number(text))}
           defaultValue={presupuestoProyecto}
         />
         <DatePicker placeholderText='Fecha de Inicio' selected={startDate} onChange={(date) => setStartDate(date)} />
         <DatePicker placeholderText='Fecha de Fin' selected={endDate} onChange={(date) => setEndDate(date)} />
-        <div style={{ display: 'flex', width: '100%', height: '60px', alignItems: 'center', justifyContent: 'right', padding: '10px', boxSizing: 'border-box' }}>
+        <div style={{ display: 'flex', width: '100%', height: '60px', alignItems: 'center', justifyContent: 'right', padding: '10px', boxSizing: 'border-box', borderRadius: 10}}>
           <Pressable onPress={saveProject} style={styles.saveButton}><Text>Crear Proyecto</Text></Pressable>
         </div>
       </View>
@@ -71,15 +71,16 @@ const styles = StyleSheet.create({
   },
   box: {
     display: 'flex',
-    width: '50%',
-    borderColor: '#eee',
-    borderRadius: 10,
+    width: '35%',
+    borderColor: '#B2FF59',
+    borderRadius: 15,
     borderStyle: 'solid',
-    borderWidth: 1,
+    borderWidth: 0,
     padding: 50,
+    backgroundColor: '#1A237E',
   },
   saveButton: {
-    backgroundColor: '#2c3ee2',
+    backgroundColor: '#B2FF59',
     borderRadius: 5,
     padding: 5,
   },
@@ -91,5 +92,6 @@ const styles = StyleSheet.create({
     marginVertical: 30,
     height: 1,
     width: '80%',
+
   },
 });
