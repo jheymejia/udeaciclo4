@@ -26,6 +26,10 @@ export type RootStackParamList = {
   Projects:undefined;
   NewProject:undefined;
   NewToDo:undefined;
+  // VerProyectos: undefined;
+  // VerInscripciones: undefined;
+  // VerAvances: undefined;
+
 
 };
 
