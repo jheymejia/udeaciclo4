@@ -1,254 +1,258 @@
 const { ApolloServer, gql } = require("apollo-server");
-const dotenv = require("dotenv");
 const { MongoClient, ObjectId } = require("mongodb");
-dotenv.config();
-const { DB_URI, DB_NAME, JWT_KEY } = process.env;
+const dotenv = require("dotenv");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+dotenv.config();
+const { DB_URI, DB_NAME, JWT_SECRET } = process.env;
+
+//Verificación de Autenticación Por Token
 const getToken = (Usuarios) =>
-  jwt.sign({ id: Usuarios._id }, JWT_KEY, { expiresIn: "30 days" });
-const getUserFromToken = async (token, db) => {
-  //if (!token) { return "OK" }
-  const tokendata = jwt.verify(token, JWT_KEY);
-  return await db
-    .collection("Usuarios")
-    .findOne({ _id: ObjectId(tokendata.id) });
+  jwt.sign({ id: Usuarios._id }, JWT_SECRET, { expiresIn: "30 days" }); //almacenando token desde el Usuarios id y la libreria jsonwebtoken
+
+//Creación de Metodo getUsuariosFromToken para las mutaciones que lo requieren
+const getUsuariosFromToken = async (token, db) => {
+  if (!token) {
+    return null;
+  }
+  const tokenData = jwt.verify(token, JWT_SECRET); //funcion de la libreria jsonwebtoken
+  if (!tokenData?.id) {
+    return null;
+  }
+  return await db.collection("Usuarios").findOne({ _id: ObjectId(tokenData.id) }); //busca el usuario con el _id igual al que reresa el ObjectId
 };
 
+//Resolvers
 const resolvers = {
+  //Query: {
+  //misProyectos: () => []
+  //},
   Query: {
-    // HU_004
-    obtenerUsuarios: async (_, __, { db, Usuarios }) => {
-      autorizado = false;
-
-      if (Usuarios) {
-        if (Usuarios.tipo_usuario == "Administrador") {
-          if (Usuarios.estado_registro == "Autorizado") {
-            autorizado = true;
-          }
-        }
+    misProyectos: async (_, __, { db, Usuarios }) => {
+      //Ver lista de tareas
+      if (!Usuarios) {
+        throw new Error("Error de Autenticación, por favor inicie Sesión");
       }
-
-      if (autorizado == true) {
-        return await db.collection("Usuarios").find().toArray();
-      } else if (autorizado == false) {
-        throw new Error("Su usuario no esta habilitado para esta operación");
-      }
+      return await db
+        .collection("Proyectos") //busqueda
+        .find({ UsuariosIds: Usuarios._id })
+        .toArray();
     },
 
-    // HU_006
-    listarProyectos: async (_, __, { db, Usuarios }) => {
-      autorizado = false;
-
-      if (Usuarios) {
-        if (Usuarios.tipo_usuario == "Administrador") {
-          if (Usuarios.estado_registro == "Autorizado") {
-            autorizado = true;
-          }
-        }
+    getProyectos: async (_, { id }, { db, Usuarios }) => {
+      //Ver tareas por ID
+      if (!Usuarios) {
+        throw new Error("Error de Autenticación tabla proyectos, por favor inicie Sesión");
       }
-
-      if (autorizado == true) {
-        return await db.collection("Proyectos").find().toArray();
-      } else if (autorizado == false) {
-        throw new Error("Su usuario no esta habilitado para esta operación");
-      }
+      return await db.collection("Proyectos").findOne({ _id: ObjectId(id) });
     },
-
-    // USUARIOS HU_010
-
-    // USUARIOS HU_013
-
-    // USUARIOS HU_015
-
-    // USUARIOS HU_017
-
-    // USUARIOS HU_019
-
-    // USUARIOS HU_021
   },
 
   //Mutationes
   Mutation: {
-    // GENERAL HU_001, HU_002
-
     signUp: async (root, { input }, { db }) => {
-      const hashedPassword = bcrypt.hashSync(input.contrasena);
-      const newUser = {
+      //Registrarse
+      const hashedcontrasena = bcrypt.hashSync(input.contrasena); //hasheamos la contraseña que viene desde el input
+      const newUsuarios = {
+        //Creamos al nuevo usuario
         ...input,
-        contrasena: hashedPassword,
-        estado_registro: "Pendiente",
+        contrasena: hashedcontrasena,
       };
-      const result = await db.collection("Usuarios").insertOne(newUser);
-      //Funcion asincrona que puede recibir 3 argumentos y regresa un objeto
-
+      const result = await db.collection("Usuarios").insertOne(newUsuarios); //Funcion asincrona que puede recibir 3 argumentos y regresa un objeto
       return {
-        Usuarios: newUser,
-        token: getToken(newUser),
+        //el esquema pide que se regrese un usuario cuando el proceso se haga bien, al igual que un token
+        Usuarios: newUsuarios,
+        token: getToken(newUsuarios),
       };
     },
 
     signIn: async (root, { input }, { db }) => {
-      const Usuarios = await db
-        .collection("Usuarios")
-        .findOne({ correo: input.correo });
-      const IsClaveCorrecta =
-        Usuarios && bcrypt.compareSync(input.contrasena, Usuarios.contrasena);
-
-      if (!Usuarios || !IsClaveCorrecta) {
-        throw new Error("Credenciales no son correctas");
+      //Iniciar Sesión
+      const Usuarios = await db.collection("Usuarios").findOne({ correo: input.correo }); //compara el correo en el input con los que estan en la collecion Usuarios
+      const iscontrasenaCorrect =
+        Usuarios && bcrypt.compareSync(input.contrasena, Usuarios.contrasena); //compara el hash del contrasena en el input con los que estan en la collecion Usuarios
+      if (!Usuarios || !iscontrasenaCorrect) {
+        //Verificamos si ambas respuestas son true
+        throw new Error("Credenciales erroneas :("); //sino son true, lanzamos error
       }
-
       return {
+        //si son true retornamos la información completa que hay del usuario en la collecion
         Usuarios,
-        token: getToken(Usuarios),
+        token: getToken(Usuarios), //asignamos un getToken al campo token
       };
     },
 
-    // USUARIOS HU_003
-
-    actualizarUsuario: async (_, { input }, { db, Usuarios }) => {
+    createProyectos: async (root, { title }, { db, Usuarios }) => {
+      //Registrar una tarea
       if (!Usuarios) {
         console.log("No esta autenticado, por favor inicie sesión.");
-      }
-
-      // No se almacena en DB la contrasena digitada por el usuario, se debe encriptar
-      hashedPassword = bcrypt.hashSync(input.contrasena);
-
-      // Si el usuario cambia el tipo de usuario debe esperar a autorizacion por cuestion de seguridad
-      if (input.tipo_usuario == Usuarios.tipo_usuario) {
-        estado_usuario_ingresar = Usuarios.tipo_usuario;
-      } else {
-        estado_usuario_ingresar = "Pendiente";
-      }
-
-      const result = await db.collection("Usuarios").updateOne(
-        { _id: ObjectId(Usuarios._id) },
-        {
-          $set: {
-            correo: input.correo,
-            identificacion_usuario: input.identificacion_usuario,
-            nombre_completo_usuario: input.nombre_completo_usuario,
-            contrasena: hashedPassword,
-            tipo_usuario: input.tipo_usuario,
-            estado_registro: estado_usuario_ingresar,
-          },
-        }
-      );
-
-      return await db
-        .collection("Usuarios")
-        .findOne({ _id: ObjectId(Usuarios._id) });
+      } //Solo usuarios correctamente logueados lo pueden hacer
+      const newProyectos = {
+        //Creamos un nuevo documento de tipo tasklis que tenga: titulo, fecha de creacion y un arreglo con UsuariosId y nombre del usuario
+        title,
+        createdAt: new Date().toISOString(),
+        UsuariosIds: [Usuarios._id], //Crea un arreglo donde se guardaran los ID de los usuarios relacionados
+        UsuariosNames: [Usuarios.nombre], //Crea un arreglo donde se guardaran los Nombres de los usuarios relacionados
+      };
+      console.log("Tarea Creada Correctamente"); //mensaje de consola
+      const result = await db.collection("Proyectos").insertOne(newProyectos); //guardar el documento en la coleccion corespondiente
+      return newProyectos; //El metodo en los esquemas pide regresar un documento de tipo Proyectos
     },
 
-    // USUARIOS HU_005
-    aceptarUsuario: async (_, { id, estado_registro }, { db, Usuarios }) => {
+    updateProyectos: async (_, { id, title }, { db, Usuarios }) => {
+      //Actualizar una tarea, La funcion pide el id del objeto a eliminar y el titulo nuevo a asignar
       if (!Usuarios) {
         console.log("No esta autenticado, por favor inicie sesión.");
-      }
-
-      if (Usuarios) {
-        if (Usuarios.tipo_usuario == "Administrador") {
-          if (Usuarios.estado_registro == "Autorizado") {
-            const result = await db
-              .collection("Usuarios")
-              .updateOne(
-                { _id: ObjectId(id) },
-                { $set: { estado_registro: estado_registro } }
-              );
-            return await db
-              .collection("Usuarios")
-              .findOne({ _id: ObjectId(id) });
+      } //Solo usuarios correctamente logueados lo pueden hacer
+      const result = await db
+        .collection("Proyectos") //La funcion pide el id del objeto a eliminar y el titulo nuevo a asignar
+        .updateOne(
+          {
+            _id: ObjectId(id), //Se actualiza el documento que coincide en su id
+          },
+          {
+            $set: { title }, //Se setea el nuevo titulo
           }
-        }
-      }
+        ); //IMPORTANTE: Si nuestro proyecto necesita que mas campos sean editables, se deben establecer como argumentos y brindarselos a la funcion desde el front(apollo)
+      //Si un campo no es editado, es decir, queda en blanco en el front, se puede establecer un if que evalue que si el campo esta en blanco entonces no se ejecuta el update
+      console.log("Tarea Actualizada Correctamente");
+      return await db.collection("Proyectos").findOne({ _id: ObjectId(id) }); //regresa los nuevos valores de la tarea editada
     },
 
-    // USUARIOS HU_007   
-
-    estadoInscripcion: async (_, { id, estado_inscripcion }, { db, Usuarios }) => {
+    deleteProyectos: async (_, { id }, { db, Usuarios }) => {
+      //Eliminar una tarea, mutacion pide el id de la tarea a eliminar
       if (!Usuarios) {
         console.log("No esta autenticado, por favor inicie sesión.");
+      } //Solo usuarios correctamente logueados lo pueden hacer
+
+      await db.collection("Proyectos").remove({ _id: ObjectId(id) }); //Se elimina la tarea que tiene el id ingresado en el imput
+      console.log("Tarea Eliminada Correctamente");
+      return true; //regresa booleano
+    },
+
+    addUsuariosToProyectos: async (_, { ProyectosId, UsuariosId }, { db, Usuarios }) => {
+      if (!Usuarios) {
+        console.log("No esta autenticado, por favor inicie sesión.");
+      } //Solo usuarios correctamente logueados lo pueden hacer
+      const Proyectos = await db
+        .collection("Proyectos")
+        .findOne({ _id: ObjectId(ProyectosId) });
+      const usuario = await db
+        .collection("Usuarios")
+        .findOne({ _id: ObjectId(UsuariosId) });
+
+      if (!Proyectos) {
+        return null; //Cambiar respuesta a su gusto
       }
 
-      const result = await db.collection("Inscripciones").updateOne(
-        { _id: ObjectId(id) },
+      if (
+        Proyectos.UsuariosIds.find((dbId) => dbId.toString() === UsuariosId.toString())
+      ) {
+        return Proyectos; //Evitamos duplicidad verificando la existencia previa del usuario
+      }
+      await db.collection("Proyectos").updateOne(
         {
-          $set: {     
-            id: ObjectId(id),      
-            estado_inscripcion: estado_inscripcion,
+          //busca la Proyectos a actualizar
+          _id: ObjectId(ProyectosId),
+        },
+        {
+          $push: {
+            UsuariosIds: ObjectId(UsuariosId), //empuja el objectid(UsuariosId) al arreglo UsuariosIds
+            UsuariosNames: usuario.nombre, //empuja el nombre del usuario al arreglo Usuariosnames
           },
         }
       );
-
-      return await db.collection("Inscripciones").findOne({ _id: ObjectId(id) });
+      Proyectos.UsuariosIds.push(ObjectId(UsuariosId)); //Confirmación
+      Proyectos.UsuariosNames.push(usuario.nombre); //confirmación
+      return Proyectos;
     },
 
-
-    // USUARIOS HU_008
-
-    estadoProyecto: async (_, { id, estado_proyecto }, { db, Usuarios }) => {
+    //ToDos (avances)
+    createToDo: async (root, { content, ProyectosId }, { db, Usuarios }) => {
       if (!Usuarios) {
         console.log("No esta autenticado, por favor inicie sesión.");
-      }
-
-      const result = await db.collection("Proyectos").updateOne(
-        { _id: ObjectId(id) },
-        {
-          $set: {     
-            id: ObjectId(id),      
-            estado_proyecto: estado_proyecto,
-          },
-        }
-      );
-
-      return await db.collection("Proyectos").findOne({ _id: ObjectId(id) });
+      } //Solo usuarios correctamente logueados lo pueden hacer
+      const newToDo = {
+        content,
+        ProyectosId: ObjectId(ProyectosId),
+        isCompleted: false,
+      };
+      const result = await db.collection("ToDo").insertOne(newToDo);
+      return newToDo;
     },
 
-    // USUARIOS HU_009
-
-    faseProyecto: async (_, { id, fase_proyecto }, { db, Usuarios }) => {
+    updateToDo: async (_, data, { db, Usuarios }) => {
       if (!Usuarios) {
         console.log("No esta autenticado, por favor inicie sesión.");
-      }
+      } //Solo usuarios correctamente logueados lo pueden hacer
 
-      const result = await db.collection("Proyectos").updateOne(
-        { _id: ObjectId(id) },
+      const result = await db.collection("ToDo").updateOne(
+        { _id: ObjectId(data.id) },
         {
-          $set: {  
-            id:   ObjectId(id),       
-            fase_proyecto: fase_proyecto,
-          },
+          $set: data,
         }
       );
-
-      return await db.collection("Proyectos").findOne({ _id: ObjectId(id) });
+      return await db.collection("ToDo").findOne({ _id: ObjectId(data.id) });
     },
-
-    // USUARIOS HU_011
-
-    // USUARIOS HU_012
-
-    // USUARIOS HU_014
-
-    // USUARIOS HU_016
-
-    // USUARIOS HU_018
-
-    // USUARIOS HU_020
-
-    // USUARIOS HU_022
-
-    // USUARIOS HU_023
+    deleteToDo: async (_, { id }, { db, Usuarios }) => {
+      //Eliminar una tarea, mutacion pide el id de la tarea a eliminar
+      if (!Usuarios) {
+        console.log("No esta autenticado, por favor inicie sesión.");
+      } //Solo usuarios correctamente logueados lo pueden hacer
+      await db.collection("ToDo").remove({ _id: ObjectId(id) }); //Se elimina la tarea que tiene el id ingresado en el imput
+      console.log("ToDo Eliminada Correctamente");
+      return true; //regresa booleano
+    },
   },
+
+  //Parametros inmutables del Usuarios
   Usuarios: {
     id: (root) => {
       return root._id;
     },
   },
+
+  //Parametros inmutables de los Proyectos
+  Proyectos: {
+    id: ({ _id, id }) => _id || id, //id del objeto sera automaticamente el valor de _id
+    progress: async ({ _id }, _, { db }) => {
+      const todos = await db
+        .collection("ToDo")
+        .find({ ProyectosId: ObjectId(_id) })
+        .toArray();
+      const completed = todos.filter((todo) => todo.isCompleted);
+      if (todos.length === 0) {
+        return 0;
+      }
+      return (completed.length / todos.length) * 100;
+    },
+
+    Usuarioss: async ({ UsuariosIds }, _, { db }) =>
+      Promise.all(
+        //Función asincronica que se compromete a traer todos los usuarios relacionados con la Proyectos
+        UsuariosIds.map(
+          (UsuariosId) => db.collection("Usuarios").findOne({ _id: UsuariosId }) //Consulta usuarios por Id
+        )
+      ),
+    todos: async ({ _id }, _, { db }) =>
+      await db
+        .collection("ToDo")
+        .find({ ProyectosId: ObjectId(_id) })
+        .toArray(),
+  },
+
+  //Parametros inmutables del Usuarios
+  ToDo: {
+    id: (root) => {
+      return root._id;
+    },
+    Proyectos: async ({ ProyectosId }, _, { db }) =>
+      await db.collection("Proyectos").findOne({ _id: ObjectId(ProyectosId) }),
+  },
 };
 
 const start = async () => {
+  //Iniciar Serviror
   const client = new MongoClient(DB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -257,33 +261,31 @@ const start = async () => {
   const db = client.db(DB_NAME);
 
   const server = new ApolloServer({
+    //Contextos del servidor(necesarios)
     typeDefs,
     resolvers,
     context: async ({ req }) => {
-      const Usuarios = await getUserFromToken(req.headers.authorization, db);
-      console.log(Usuarios);
+      const Usuarios = await getUsuariosFromToken(req.headers.authorization, db);
+      //console.log(Usuarios)
       return {
-        db,
-        Usuarios,
+        db, //base de datos como contexto
+        Usuarios, //usuario autenticado como contexto
       };
     },
   });
 
-  // The `listen` method launches a web server.
+  // Metodo listen, servidor iniciado
   server.listen().then(({ url }) => {
-    console.log(`🚀  Server ready at ${url}`);
+    console.log(`🚀  Servidor listo y corriendo en ${url}`);
   });
 };
-start();
+start(); //Arrancamos!
 
-// A schema is a collection of type definitions (hence "typeDefs")
-// that together define the "shape" of queries that are executed against
-// your data.
+//Esquemas para GRAPHL vs MongoDB
 const typeDefs = gql`
   type Query {
-    misProyectos: [Proyectos!]
-    obtenerUsuarios: [Usuarios!]
-    listarProyectos: [Proyectos!]
+    misProyectos: [Proyectos!]!
+    getProyectos(id: ID!): Proyectos
   }
 
   type Usuarios {
@@ -293,52 +295,34 @@ const typeDefs = gql`
     nombre_completo_usuario: String!
     contrasena: String!
     tipo_usuario: String!
-    estado_registro: String!
   }
-  type Proyectos {
+
+  type proyectos {
     id: ID!
-    id_proyecto: String!
-    nombre_proyecto: String!
-    objetivo_general: String!
-    objetivos_especificos: [String!]
-    presupuesto: Int!
-    fecha_inicio: String!
-    fecha_terminacion_proyecto: String!
-    identificacion_usuario: Int!
-    nombre_completo_usuario: String!
-    estado_proyecto: String!
-    fase_proyecto: String!
-  }
-  type Inscripciones {
-    id: ID!
-    id_inscripciones: String!
-    identificacion_usuario: Int!
-    id_proyecto: String!
-    estado_inscripcion: String!
-    fecha_ingreso: String!
-    fecha_egreso: String
-  }
-  type Avances {
-    id: ID!
-    id_avance: String!
-    identifiacion_usuario: Int!
-    fecha_avance: String!
-    descripcion_avance: String!
-    observaciones_lider: String
+    nombre: String!
+    objGenerales: String!
+    objEspecicos: String!
+    prespuesto: String!
+    fechain: String!
+    fechafi: String!
+    Usuarios: [Usuarios!]!
   }
 
   type Mutation {
-    signUp(input: signUpInput): AuthUser!
-    signIn(input: signInInput): AuthUser!
-    actualizarUsuario(input: signUpInput): Usuarios!
+    signUp(input: SignUpInput): AuthUsuarios!
+    signIn(input: SignInInput): AuthUsuarios!
 
-    aceptarUsuario(id: ID!, estado_registro: String!): Usuarios!
-    estadoInscripcion(id: ID!, estado_inscripcion: String!): Inscripciones!
-    estadoProyecto(id: ID!, estado_proyecto: String!): Proyectos!
-    faseProyecto(id: ID!, fase_proyecto: String!): Proyectos!
+    createProyectos(title: String!): Proyectos!
+    updateProyectos(id: ID!, title: String!): Proyectos!
+    deleteProyectos(id: ID!): Boolean!
+    addUsuariosToProyectos(ProyectosId: ID!, UsuariosId: ID!): Proyectos
+
+    createToDo(content: String!, ProyectosId: ID!): ToDo!
+    updateToDo(id: ID!, content: String, isCompleted: Boolean): ToDo!
+    deleteToDo(id: ID!): Boolean!
   }
 
-  input signUpInput {
+  input SignUpInput {
     correo: String!
     identificacion_usuario: String!
     nombre_completo_usuario: String!
@@ -346,13 +330,29 @@ const typeDefs = gql`
     tipo_usuario: String!
   }
 
-  input signInInput {
+  input SignInInput {
     correo: String!
     contrasena: String!
   }
 
-  type AuthUser {
+  type AuthUsuarios {
     Usuarios: Usuarios!
     token: String!
+  }
+
+  type Proyectos {
+    id: ID!
+    createdAt: String!
+    title: String!
+    progress: Float!
+    Usuarioss: [Usuarios!]!
+    todos: [ToDo!]!
+  }
+
+  type ToDo {
+    id: ID!
+    content: String!
+    isCompleted: Boolean!
+    Proyectos: Proyectos!
   }
 `;

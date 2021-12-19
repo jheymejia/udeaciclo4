@@ -1,31 +1,23 @@
 {
-  "name": "proyectoc4",
+  "name": "backendcliclo4",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon src/index.js",
-    "clear": "nodemon src/cleardata.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Y-Avila/udeaciclo4.git"
+    "clear": "nodemon src/cleardata.js",
+    "start": "node src/index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Y-Avila/udeaciclo4/issues"
-  },
-  "homepage": "https://github.com/Y-Avila/udeaciclo4#readme",
   "dependencies": {
     "apollo-server": "^3.5.0",
     "bcryptjs": "^2.4.3",
     "dotenv": "^10.0.0",
-    "graphql": "^15.7.2",
+    "graphql": "^15.8.0",
     "jsonwebtoken": "^8.5.1",
-    "mongodb": "^4.2.0",
-    "nodemon": "^2.0.15"
+    "mongodb": "^4.2.2"
   }
 }
