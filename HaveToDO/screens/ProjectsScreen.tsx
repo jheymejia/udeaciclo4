@@ -12,25 +12,33 @@ import { AntDesign } from '@expo/vector-icons';
 const MY_PROJECTS = gql`
 query misProyectos {
   misProyectos {
-  id
-  title 
-  createdAt
-  users {
+  id_proyecto
+  nombre_proyecto
+  objetivo_general
+  objetivos_especificos
+  presupuesto
+  fecha_inicio
+  fecha_terminacion_proyecto
+  identificacion_usuario
+  nombre_completo_usuario
+  estado_proyecto
+  fase_proyecto
+  Usuarios {
     id
-    nombre
+    nombre_completo_usuario
   } 
   }
 }
 `;
 
 export default function ProjectsScreen() {
-  const navegation= useNavigation();
+  const navegation = useNavigation();
   const logOut = async () => {
     await AsyncStorage.removeItem('token');
     navegation.navigate("SignIn")
   }
 
-  const newProyect = async () =>{
+  const newProyect = async () => {
     navegation.navigate("NewProject")
   }
 
@@ -55,66 +63,66 @@ export default function ProjectsScreen() {
   return (
     <View style={styles.container}>
       <Pressable
-      onPress={logOut} 
-      style={{
-        backgroundColor:'#313640',
-        height:50,
-        borderRadius:5,
-        alignItems:"center",
-        justifyContent:"center",
-        marginHorizontal:"85%",
-        width:'15%',
-        position:"absolute"
-
-      }}>  
-      <Text
+        onPress={logOut}
         style={{
-          color:"white",
-          fontSize:18,
-          fontWeight:"bold"
+          backgroundColor: '#313640',
+          height: 50,
+          borderRadius: 5,
+          alignItems: "center",
+          justifyContent: "center",
+          marginHorizontal: "85%",
+          width: '15%',
+          position: "absolute"
+
         }}>
+        <Text
+          style={{
+            color: "white",
+            fontSize: 18,
+            fontWeight: "bold"
+          }}>
           Cerrar Sesión
         </Text>
       </Pressable>
       <Text style={styles.title}>LISTA DE TAREAS/PROYECTOS</Text>
       <FlatList
         data={project}
-        renderItem={({item}) => <><ProjectItem project={item} /></>}
+        renderItem={({ item }) => <><ProjectItem project={item} /></>}
         style={{ width: '100%' }}
       />
-       <Pressable
-      onPress={newProyect} 
-      style={{
-        backgroundColor:'#313640',
-        height:50,
-        borderRadius:5,
-        alignItems:'center',
-        justifyContent:"center",
-        marginTop:30,
-        width:'20%',
-        marginHorizontal:"5%",
-      }}>  
-      <Text
+      <Pressable
+        onPress={newProyect}
         style={{
-          color:"white",
-          fontSize:18,
-          fontWeight:"bold"
+          backgroundColor: '#313640',
+          height: 50,
+          borderRadius: 5,
+          alignItems: 'center',
+          justifyContent: "center",
+          marginTop: 30,
+          width: '20%',
+          marginHorizontal: "5%",
         }}>
+        <Text
+          style={{
+            color: "white",
+            fontSize: 18,
+            fontWeight: "bold"
+          }}>
           Insertar Nuevo Proyecto
         </Text>
       </Pressable>
-      
+
     </View>
 
-    
+
 
   );
 }
 const styles = StyleSheet.create({
   container: {
     padding: 12,
-    width:"80%",
-    marginHorizontal:"10%"
+    width: "80%",
+    marginHorizontal: "10%"
   },
   root: {
     flexDirection: 'row',
@@ -132,15 +140,15 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    borderColor:"white",
-    borderRadius:2,
+    borderColor: "white",
+    borderRadius: 2,
     fontWeight: 'bold',
-    textAlign:"center",
+    textAlign: "center",
     padding: 5,
-    color:"white",
-    width:"80%",
-    marginHorizontal:"10%",
-    marginBottom:30
+    color: "white",
+    width: "80%",
+    marginHorizontal: "10%",
+    marginBottom: 30
   },
   time: {
     color: 'darkgrey'

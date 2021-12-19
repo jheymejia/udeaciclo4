@@ -227,7 +227,7 @@ const resolvers = {
       return (completed.length / todos.length) * 100;
     },
 
-    Usuarioss: async ({ UsuariosIds }, _, { db }) =>
+    Usuarios: async ({ UsuariosIds }, _, { db }) =>
       Promise.all(
         //Función asincronica que se compromete a traer todos los usuarios relacionados con la Proyectos
         UsuariosIds.map(
@@ -297,15 +297,19 @@ const typeDefs = gql`
     tipo_usuario: String!
   }
 
-  type proyectos {
+  type Proyectos {
     id: ID!
-    nombre: String!
-    objGenerales: String!
-    objEspecicos: String!
-    prespuesto: String!
-    fechain: String!
-    fechafi: String!
-    Usuarios: [Usuarios!]!
+    id_proyecto: String!
+    nombre_proyecto: String!
+    objetivo_general: String!
+    objetivos_especificos: [String!]
+    presupuesto: Int!
+    fecha_inicio: String!
+    fecha_terminacion_proyecto: String!
+    identificacion_usuario: Int!
+    nombre_completo_usuario: String!
+    estado_proyecto: String!
+    fase_proyecto: String!
   }
 
   type Mutation {
@@ -345,7 +349,7 @@ const typeDefs = gql`
     createdAt: String!
     title: String!
     progress: Float!
-    Usuarioss: [Usuarios!]!
+    Usuarios: [Usuarios!]!
     todos: [ToDo!]!
   }
 
